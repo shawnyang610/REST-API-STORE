@@ -1,4 +1,4 @@
-from flask_restful import Resource, Api
+from flask_restful import Resource
 from models.store import StoreModel
 
 
@@ -31,5 +31,5 @@ class Store(Resource):
 
 class StoreList(Resource):
     def get(self):
-        storelist =list(map(lambda store: store.json(), StoreModel.query.all()))
+        storelist = [store.json() for store in StoreModel.find_all()]
         return {"stores":storelist}

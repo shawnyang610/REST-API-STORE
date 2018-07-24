@@ -1,4 +1,4 @@
-from flask_restful import Resource, Api, reqparse
+from flask_restful import Resource, reqparse
 from flask_jwt import jwt_required
 from models.item import ItemModel
 
@@ -22,7 +22,7 @@ class Item (Resource):
         if item:
             return {"message":"an item with name '{}' already exists".format(name)},400
         data = Item.parser.parse_args()
-        item = ItemModel(name, data["price"], data["store_id"])
+        item = ItemModel(name, **data)
         try:
             item.save_to_db()
         except:
@@ -50,8 +50,8 @@ class Item (Resource):
         data = Item.parser.parse_args()
         item = ItemModel.find_by_name(name)
 
-        if item==None:
-            item = ItemModel(name, data['price'], data["store_id"])
+        if item is None:
+            item = ItemModel(name, **data)
         else:
             item.price=data['price']
             item.store_id = data['store_id']
@@ -70,5 +70,5 @@ class ItemList (Resource):
         # or
         # res = list(map(lambda x: x.json(), ItemModel.query.all()))
         # or
-        res = [item.json() for item in ItemModel.query.all()]
+        res = [item.json() for item in ItemModel.find_all()]
         return {'items':res}
